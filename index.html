@@ -3,241 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나노자임 탐구 로드맵 인터랙티브 웹사이트</title>
+    <title>Nanozyme Interactive Roadmap - 윤강민</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-blue: #38bdf8;
-            --accent-purple: #c084fc;
-            --accent-green: #4ade80;
-            --text-color: #f8fafc;
+            --bg: #05070a;
+            --panel: rgba(15, 23, 42, 0.85);
+            --cyan: #22d3ee;
+            --purple: #a855f7;
+            --emerald: #10b981;
+            --rose: #f43f5e;
+            --gold: #fbbf24;
+            --text: #f1f5f9;
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .header h1 {
-            color: var(--accent-blue);
-            margin-bottom: 10px;
-        }
-        /* Step Progress Bar */
-        .stepper {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
             justify-content: center;
+            background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #05070a 100%);
         }
-        .step-btn {
-            background: #334155;
-            color: #94a3b8;
-            border: 2px solid transparent;
-            padding: 10px 18px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        .step-btn.active {
-            background: var(--accent-blue);
-            color: #0f172a;
-            border-color: #ffffff;
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
-        }
-        /* Interactive Card Area */
-        .card-container {
+
+        /* 메인 캔버스 영역 */
+        #stage-canvas {
             width: 100%;
-            max-width: 680px;
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            border: 1px solid #334155;
-            min-height: 280px;
+            max-width: 1000px;
+            height: 650px;
+            position: relative;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px;
+            transition: all 0.5s ease;
         }
-        .card-content h2 {
-            color: var(--accent-purple);
-            margin-top: 0;
-            border-bottom: 2px solid #334155;
-            padding-bottom: 10px;
-        }
-        .card-content ul {
-            line-height: 1.8;
-            padding-left: 20px;
-            font-size: 1.05rem;
-        }
-        .card-content li strong {
-            color: var(--accent-blue);
-        }
-        /* Navigation Controls */
-        .nav-buttons {
+
+        /* 시각화 애니메이션 박스 */
+        .visualizer {
+            width: 100%;
+            height: 300px;
+            margin-bottom: 30px;
             display: flex;
-            justify-content: space-between;
-            margin-top: 25px;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden;
         }
-        .action-btn {
-            background-color: var(--accent-blue);
-            color: #0f172a;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1rem;
+
+        /* 설명 텍스트 박스 */
+        .content-box {
+            width: 100%;
+            background: var(--panel);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border-left: 5px solid var(--cyan);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            min-height: 180px;
+        }
+
+        .content-box h2 {
+            font-size: 1.5rem;
+            color: var(--cyan);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-box p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #cbd5e1;
+        }
+
+        /* 네비게이션 컨트롤 */
+        .controls {
+            position: fixed;
+            bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
             cursor: pointer;
-            transition: opacity 0.2s;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 1rem;
         }
-        .action-btn:disabled {
-            background-color: #475569;
-            color: #94a3b8;
-            cursor: not-allowed;
+
+        .nav-btn:hover {
+            background: var(--cyan);
+            color: #000;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
         }
-        .action-btn:hover:not(:disabled) {
-            opacity: 0.9;
+
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .progress-indicator {
+            font-family: monospace;
+            color: var(--cyan);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
         }
+
+        /* --- 애니메이션 정의들 --- */
+
+        /* 1. 미세플라스틱 침투 */
+        .microplastic {
+            width: 15px; height: 15px; background: #64748b; border-radius: 3px; position: absolute;
+            animation: drift 4s infinite linear;
+        }
+        @keyframes drift {
+            from { transform: translateX(-500px) rotate(0deg); opacity: 0; }
+            50% { opacity: 1; }
+            to { transform: translateX(500px) rotate(360deg); opacity: 0; }
+        }
+
+        /* 2. 단백질 변성 (PETase) */
+        .protein {
+            width: 100px; height: 80px; border: 4px solid var(--emerald); border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            animation: morph 2s infinite alternate;
+        }
+        .protein.melt {
+            animation: melt-away 1s forwards;
+            border-color: var(--rose);
+        }
+        @keyframes morph {
+            0% { border-radius: 40% 60% 70% 30%; transform: scale(1); }
+            100% { border-radius: 60% 40% 30% 70%; transform: scale(1.1); }
+        }
+        @keyframes melt-away { to { transform: scale(0.2); opacity: 0; border-radius: 10%; } }
+
+        /* 3. 클릭 화학 결합 */
+        .node { width: 40px; height: 40px; border-radius: 50%; position: absolute; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.7rem; }
+        .click-center { background: var(--purple); color: white; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0.7); } 70% { box-shadow: 0 0 0 30px rgba(168, 85, 247, 0); } 100% { box-shadow: 0 0 0 0 rgba(168, 85, 247, 0); } }
+
+        /* 4. 최종 설계안 시각화 (나노자임 모델) */
+        .final-model {
+            position: relative; width: 250px; height: 250px;
+        }
+        .sac-center {
+            width: 60px; height: 60px; background: radial-gradient(circle, #fff, var(--cyan));
+            border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            box-shadow: 0 0 50px var(--cyan); z-index: 5;
+        }
+        .n4-frame {
+            width: 140px; height: 140px; border: 3px solid var(--purple);
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg);
+        }
+        .supramolecular-pocket {
+            width: 220px; height: 220px; border: 2px dashed var(--emerald); border-radius: 50%;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            animation: rotate-slow 10s infinite linear;
+        }
+        @keyframes rotate-slow { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        /* 화면 전환 효과 */
+        .fade-in { animation: fadeIn 0.8s forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>🧬 생체모방 나노자임 탐구 인터랙티브 로드맵</h1>
-        <p>버튼을 클릭하여 윤강민 학생의 탐구 단계와 논리적 흐름을 확인해보세요.</p>
-    </div>
-
-    <div class="stepper">
-        <button class="step-btn active" onclick="setStep(0)">1. 문제 인식</button>
-        <button class="step-btn" onclick="setStep(1)">2. 한계 분석</button>
-        <button class="step-btn" onclick="setStep(2)">3. 융합 구조 설계</button>
-        <button class="step-btn" onclick="setStep(3)">4. 계산 파이프라인</button>
-        <button class="step-btn" onclick="setStep(4)">5. 최종 캔버스 요약</button>
-    </div>
-
-    <div class="card-container">
-        <div class="card-content" id="cardContent">
+    <div id="stage-canvas">
+        <div class="visualizer" id="visual-area">
             </div>
-
-        <div class="nav-buttons">
-            <button class="action-btn" id="prevBtn" onclick="prevStep()">◀ 이전 단계</button>
-            <button class="action-btn" id="nextBtn" onclick="nextStep()">다음 단계 ▶</button>
+        <div class="content-box" id="info-area">
+            <h2 id="title-text">로딩 중...</h2>
+            <p id="body-text">탐구 로드맵을 불러오고 있습니다.</p>
         </div>
     </div>
 
+    <div class="controls">
+        <button class="nav-btn" id="prev-btn" onclick="goPrev()">◀ 이전</button>
+        <div class="progress-indicator" id="prog-text">01 / 12</div>
+        <button class="nav-btn" id="next-btn" onclick="goNext()">다음 과정 ▶</button>
+    </div>
+
     <script>
-        // 탐구 과정 데이터
-        const stepsData = [
+        // 탐구 과정 세부 데이터 (총 12단계)
+        const story = [
             {
-                title: "🎯 1단계: 문제 인식 - 미세플라스틱의 위험성",
-                content: `
-                    <ul>
-                        <li><strong>생체 장벽 침투:</strong> 미세/나노플라스틱 입자가 혈액-뇌 장벽(BBB)을 통과하여 뇌 조직 축적.</li>
-                        <li><strong>신경독성 유발:</strong> 세포 내 미토콘드리아 손상 및 활성산소종(ROS) 급증으로 만성 신경염증 유발.</li>
-                        <li><strong>탐구 동기:</strong> 인체에 해를 주지 않고 체내/환경 미세플라스틱을 분해할 수 있는 정밀 촉매 필요성 절감.</li>
-                    </ul>
+                title: "1.1 문제의 시작: 나노플라스틱",
+                body: "우리가 버린 플라스틱은 자외선과 파도에 의해 나노 단위로 부서집니다. 이들은 너무 작아 우리 몸 어디든 침투할 수 있습니다.",
+                visual: () => {
+                    let html = '';
+                    for(let i=0; i<15; i++) {
+                        let top = Math.random() * 250;
+                        let delay = Math.random() * 5;
+                        html += `<div class="microplastic" style="top:${top}px; animation-delay:${delay}s"></div>`;
+                    }
+                    return html;
+                }
+            },
+            {
+                title: "1.2 생체 장벽(BBB) 통과",
+                body: "나노플라스틱은 혈액-뇌 장벽(BBB)조차 통과하여 뇌 신경세포에 축적됩니다. 이것이 신경독성의 시작입니다.",
+                visual: () => `
+                    <div style="width:10px; height:100%; background:rgba(255,255,255,0.2); position:absolute; left:50%;"></div>
+                    <div class="microplastic" style="top:100px; animation: drift 2s infinite linear;"></div>
+                    <div style="position:absolute; left:55%; color:var(--rose);">뇌 조직(Brain Tissue)</div>
                 `
             },
             {
-                title: "⚠️ 2단계: 한계 분석 - 왜 기존 기술로는 안 될까?",
-                content: `
-                    <ul>
-                        <li><strong>생물학적 효소 (PETase):</strong> 기질 선택성은 우수하지만, 45°C 이상에서 단백질 열 변성이 일어나 분해 활성 파괴.</li>
-                        <li><strong>무기 촉매 (금속 산화물):</strong> 열안정성은 높지만, 특정 플라스틱 결합만 골라 자르는 선택성 부재.</li>
-                        <li><strong>💡 아이디어 도출:</strong> 효소의 <b>'선택성'</b> + 무기물의 <b>'고온 안정성'</b>을 결합한 <b>생체모방 나노자임(Nanozyme)</b> 설계!</li>
-                    </ul>
+                title: "1.3 ROS와 미토콘드리아 손상",
+                body: "세포 내 플라스틱은 활성산소(ROS)를 폭발적으로 증가시켜 미토콘드리아를 파괴하고 뇌 염증을 유발합니다.",
+                visual: () => `
+                    <div class="pulse-node" style="width:100px; height:100px; background:var(--rose); border-radius:50%; opacity:0.6; animation: pulse 1s infinite;"></div>
+                    <div style="position:absolute; font-weight:bold; color:white;">OXIDATIVE STRESS</div>
                 `
             },
             {
-                title: "🔬 3단계: 구조 설계 - 3대 화학 개념의 통합",
-                content: `
-                    <ul>
-                        <li><strong>① 클릭화학 (Triazole Linker):</strong> CuAAC 반응 기반 질소 배위 골격으로 금속 원자를 안정 고정.</li>
-                        <li><strong>② M-N4 SAC (단일원자 촉매):</strong> d-오비탈 전하 이동으로 에스터 결합(C-O) 활성화 에너지(Ea) 감소.</li>
-                        <li><strong>③ 초분자 포켓 (Host-Guest):</strong> π-π 상호작용 기반 PET 벤젠 고리 선택적 포집.</li>
-                    </ul>
+                title: "2.1 기존 기술: PETase 효소",
+                body: "기존의 PETase 효소는 플라스틱 결합을 아주 잘 찾아내지만, 단백질로 이루어져 있어 열에 매우 취약합니다.",
+                visual: () => `<div class="protein"></div>`
+            },
+            {
+                title: "2.2 열 변성의 한계",
+                body: "상온을 조금만 벗어나도 효소의 입체구조가 무너지며 활성을 잃어버립니다. 실제 산업 현장 적용이 어려운 이유입니다.",
+                visual: () => `<div class="protein melt"></div><div style="position:absolute; bottom:20px; color:var(--rose);">Structure Destroyed (45°C+)</div>`
+            },
+            {
+                title: "3.1 설계 전략: 나노자임(Nanozyme)",
+                body: "그래서 우리는 효소의 선택성과 무기물의 안정성을 합친 '나노자임'을 설계합니다. 첫 번째 단계는 단단한 골격입니다.",
+                visual: () => `<div class="click-center" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--purple);"></div>`
+            },
+            {
+                title: "3.2 클릭 화학(Click Chemistry) 적용",
+                body: "CuAAC 클릭 반응을 이용한 트리아졸 링커는 금속 원자를 마치 집게처럼 강력하게 잡아 고정합니다.",
+                visual: () => `
+                    <div class="node click-center" style="left:40%">N</div>
+                    <div class="node click-center" style="left:50%">N</div>
+                    <div class="node click-center" style="left:60%">N</div>
+                    <div style="position:absolute; bottom:50px;">Triazole Coordination Frame</div>
                 `
             },
             {
-                title: "💻 4단계: 검증 워크플로우 - 계산화학 3단계 파이프라인",
-                content: `
-                    <ul>
-                        <li><strong>1단계 [ML 스크리닝]:</strong> 기계학습으로 10,000+ 후보 중 반응성 높은 구조 1차 선별.</li>
-                        <li><strong>2단계 [DFT 양자 계산]:</strong> 활성화 에너지 정밀 분석으로 촉매 성능 2차 정밀 검증.</li>
-                        <li><strong>3단계 [MD 시뮬레이션]:</strong> 실제 수계(물) 환경에서 촉매 구조가 깨지지 않는지 최종 검증.</li>
-                    </ul>
+                title: "3.3 M-N4 단일원자 촉매(SAC)",
+                body: "중심 금속 원자는 주변 질소와 배위 결합하여 PET의 에스터 결합 활성화 에너지를 비약적으로 낮춥니다.",
+                visual: () => `
+                    <div class="n4-frame"></div>
+                    <div class="sac-center"></div>
                 `
             },
             {
-                title: "🎨 5단계: 최종 결론 - 나노자임 설계 캔버스",
-                content: `
-                    <ul>
-                        <li><strong>핵심 성과:</strong> 환경 독성 물질(PET)을 무독성 소분자(TPA/EG)로 안전하게 가수분해 절단하는 이론적 모델 완성.</li>
-                        <li><strong>확장 가능성:</strong> 특정 질병 표적 분자 인식 기술과 연계하여 <b>진단 센서 및 약물 전달(DDS)</b> 기술로 응용 확장 가능.</li>
-                    </ul>
+                title: "3.4 초분자 포켓(Host-Guest) 완성",
+                body: "마지막으로 초분자 포켓을 씌워 오직 PET 플라스틱만 골라 잡아내는 '기질 선택성'을 부여합니다.",
+                visual: () => `
+                    <div class="supramolecular-pocket"></div>
+                    <div class="sac-center" style="width:30px; height:30px;"></div>
+                `
+            },
+            {
+                title: "4.1 검증: 계산화학 파이프라인",
+                body: "이 설계가 실제 작동할지 ML(기계학습)과 DFT(양자계산)를 통해 수만 가지 후보 중 최적의 촉매를 골라냅니다.",
+                visual: () => `
+                    <div style="display:flex; gap:10px;">
+                        <div class="pipe-step" style="border-color:var(--cyan)">ML</div>
+                        <div class="pipe-step" style="border-color:var(--purple)">DFT</div>
+                        <div class="pipe-step" style="border-color:var(--emerald)">MD</div>
+                    </div>
+                `
+            },
+            {
+                title: "5.1 최종 설계안: Biomimetic Nanozyme",
+                body: "이것이 우리가 설계한 최종 나노자임 모델입니다. 열에 강하면서도 효소처럼 정확하게 미세플라스틱을 분해합니다.",
+                visual: () => `
+                    <div class="final-model">
+                        <div class="supramolecular-pocket"></div>
+                        <div class="n4-frame"></div>
+                        <div class="sac-center"></div>
+                    </div>
+                `
+            },
+            {
+                title: "5.2 분해 결과: TPA & EG",
+                body: "나노자임에 의해 분해된 미세플라스틱은 무독성 소분자인 테레프탈산(TPA)과 에틸렌글리콜(EG)로 변해 안전하게 배출됩니다.",
+                visual: () => `
+                    <div style="color:var(--emerald); font-weight:bold; font-size:1.5rem;">C10H8O4 (PET) ➔ TPA + EG</div>
+                    <div style="position:absolute; bottom:50px; color:var(--emerald);">SUCCESSFUL DEGRADATION</div>
                 `
             }
         ];
 
-        let currentStep = 0;
+        let currentIndex = 0;
 
-        function updateCard() {
-            const data = stepsData[currentStep];
-            document.getElementById('cardContent').innerHTML = `
-                <h2>${data.title}</h2>
-                <div>${data.content}</div>
-            `;
+        function updateScreen() {
+            const step = story[currentIndex];
+            const visualArea = document.getElementById('visual-area');
+            const infoArea = document.getElementById('info-area');
 
-            // Step Button highlight
-            const buttons = document.querySelectorAll('.step-btn');
-            buttons.forEach((btn, idx) => {
-                if (idx === currentStep) btn.classList.add('active');
-                else btn.classList.remove('active');
-            });
-
-            // Action Button enable/disable
-            document.getElementById('prevBtn').disabled = (currentStep === 0);
-            if (currentStep === stepsData.length - 1) {
-                document.getElementById('nextBtn').innerText = "첫 단계로 🔄";
+            // 애니메이션 초기화
+            visualArea.innerHTML = step.visual();
+            
+            // 텍스트 및 효과 업데이트
+            document.getElementById('title-text').innerText = step.title;
+            document.getElementById('body-text').innerText = step.body;
+            document.getElementById('prog-text').innerText = `${String(currentIndex + 1).padStart(2, '0')} / ${story.length}`;
+            
+            // 버튼 상태
+            document.getElementById('prev-btn').disabled = (currentIndex === 0);
+            const nextBtn = document.getElementById('next-btn');
+            if(currentIndex === story.length - 1) {
+                nextBtn.innerText = "처음으로 🔄";
             } else {
-                document.getElementById('nextBtn').innerText = "다음 단계 ▶";
+                nextBtn.innerText = "다음 과정 ▶";
             }
+
+            // 화면 전환 애니메이션
+            infoArea.classList.remove('fade-in');
+            void infoArea.offsetWidth;
+            infoArea.classList.add('fade-in');
         }
 
-        function setStep(step) {
-            currentStep = step;
-            updateCard();
+        function goNext() {
+            if(currentIndex < story.length - 1) currentIndex++;
+            else currentIndex = 0;
+            updateScreen();
         }
 
-        function prevStep() {
-            if (currentStep > 0) {
-                currentStep--;
-                updateCard();
-            }
-        }
-
-        function nextStep() {
-            if (currentStep < stepsData.length - 1) {
-                currentStep++;
-            } else {
-                currentStep = 0; // Loop back
-            }
-            updateCard();
+        function goPrev() {
+            if(currentIndex > 0) currentIndex--;
+            updateScreen();
         }
 
         // 초기 실행
-        updateCard();
+        updateScreen();
+
     </script>
 </body>
 </html>
