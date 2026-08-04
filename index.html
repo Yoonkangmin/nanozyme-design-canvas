@@ -43,10 +43,15 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            transition: transform 1s cubic-bezier(0.87, 0, 0.13, 1);
+            transition: transform 0.8s cubic-bezier(0.87, 0, 0.13, 1), opacity 0.8s ease;
+            opacity: 1;
         }
 
-        #intro-screen.hide { transform: translateY(-100%); }
+        #intro-screen.hide { 
+            transform: translateY(-100%); 
+            opacity: 0;
+            pointer-events: none;
+        }
 
         .symposium-tag {
             font-family: 'Orbitron', sans-serif;
@@ -136,8 +141,6 @@
         }
 
         /* --- 시각적 애니메이션 요소들 --- */
-        
-        /* 1. 플라스틱 입자 */
         .plastic-fragment {
             position: absolute;
             background: #94a3b8;
@@ -151,7 +154,6 @@
             66% { transform: translate(-50px, 80px) rotate(240deg); }
         }
 
-        /* 2. 단백질 구조 (SVG) */
         .protein-svg {
             width: 300px; height: 300px;
             fill: none; stroke: var(--emerald); stroke-width: 3;
@@ -160,7 +162,6 @@
         }
         @keyframes draw { to { stroke-dashoffset: 0; } }
 
-        /* 3. 클릭 화학 빔 */
         .click-energy {
             position: absolute;
             width: 200px; height: 2px;
@@ -172,7 +173,6 @@
             to { transform: translateX(300px) scaleX(2); }
         }
 
-        /* 4. 최종 나노자임 모델 (SAC + Frame + Pocket) */
         .nanozyme-model {
             position: relative;
             width: 350px; height: 350px;
@@ -308,7 +308,17 @@
         function startInquiry() {
             document.getElementById('intro-screen').classList.add('hide');
             document.getElementById('main-container').style.display = 'grid';
+            current = 0; // 시작 시 첫 단계로 리셋
             update();
+        }
+
+        function resetToIntro() {
+            // 메인 화면을 가리고 시작 화면을 부드럽게 다시 올림
+            document.getElementById('intro-screen').classList.remove('hide');
+            setTimeout(() => {
+                document.getElementById('main-container').style.display = 'none';
+                current = 0;
+            }, 800);
         }
 
         function update() {
@@ -319,18 +329,30 @@
             document.getElementById('counter').innerText = `${String(current + 1).padStart(2, '0')} / ${exploration.length}`;
             
             document.getElementById('prevBtn').disabled = (current === 0);
-            document.getElementById('nextBtn').innerText = (current === exploration.length - 1) ? "다시 보기" : "다음 단계";
+            
+            // 마지막 단계일 경우 시작 화면으로 돌아가는 버튼 텍스트 설정
+            const nextBtn = document.getElementById('nextBtn');
+            if (current === exploration.length - 1) {
+                nextBtn.innerText = "시작 화면으로 돌아가기 🔄";
+            } else {
+                nextBtn.innerText = "다음 단계 ▶";
+            }
         }
 
         function next() {
-            if (current < exploration.length - 1) current++;
-            else current = 0;
-            update();
+            if (current < exploration.length - 1) {
+                current++;
+                update();
+            } else {
+                resetToIntro(); // 마지막 단계 완료 시 시작 화면으로 이동
+            }
         }
 
         function prev() {
-            if (current > 0) current--;
-            update();
+            if (current > 0) {
+                current--;
+                update();
+            }
         }
     </script>
 </body>
