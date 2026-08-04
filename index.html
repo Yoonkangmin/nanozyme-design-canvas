@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나노자임 탐구 로드맵 인터랙티브 웹사이트</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --accent-purple: #c084fc;
+            --accent-green: #4ade80;
+            --text-color: #f8fafc;
+        }
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+        }
+        /* Step Progress Bar */
+        .stepper {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .step-btn {
+            background: #334155;
+            color: #94a3b8;
+            border: 2px solid transparent;
+            padding: 10px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .step-btn.active {
+            background: var(--accent-blue);
+            color: #0f172a;
+            border-color: #ffffff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+        }
+        /* Interactive Card Area */
+        .card-container {
+            width: 100%;
+            max-width: 680px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border: 1px solid #334155;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card-content h2 {
+            color: var(--accent-purple);
+            margin-top: 0;
+            border-bottom: 2px solid #334155;
+            padding-bottom: 10px;
+        }
+        .card-content ul {
+            line-height: 1.8;
+            padding-left: 20px;
+            font-size: 1.05rem;
+        }
+        .card-content li strong {
+            color: var(--accent-blue);
+        }
+        /* Navigation Controls */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+        .action-btn {
+            background-color: var(--accent-blue);
+            color: #0f172a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .action-btn:disabled {
+            background-color: #475569;
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+        .action-btn:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🧬 생체모방 나노자임 탐구 인터랙티브 로드맵</h1>
+        <p>버튼을 클릭하여 윤강민 학생의 탐구 단계와 논리적 흐름을 확인해보세요.</p>
+    </div>
+
+    <div class="stepper">
+        <button class="step-btn active" onclick="setStep(0)">1. 문제 인식</button>
+        <button class="step-btn" onclick="setStep(1)">2. 한계 분석</button>
+        <button class="step-btn" onclick="setStep(2)">3. 융합 구조 설계</button>
+        <button class="step-btn" onclick="setStep(3)">4. 계산 파이프라인</button>
+        <button class="step-btn" onclick="setStep(4)">5. 최종 캔버스 요약</button>
+    </div>
+
+    <div class="card-container">
+        <div class="card-content" id="cardContent">
+            </div>
+
+        <div class="nav-buttons">
+            <button class="action-btn" id="prevBtn" onclick="prevStep()">◀ 이전 단계</button>
+            <button class="action-btn" id="nextBtn" onclick="nextStep()">다음 단계 ▶</button>
+        </div>
+    </div>
+
+    <script>
+        // 탐구 과정 데이터
+        const stepsData = [
+            {
+                title: "🎯 1단계: 문제 인식 - 미세플라스틱의 위험성",
+                content: `
+                    <ul>
+                        <li><strong>생체 장벽 침투:</strong> 미세/나노플라스틱 입자가 혈액-뇌 장벽(BBB)을 통과하여 뇌 조직 축적.</li>
+                        <li><strong>신경독성 유발:</strong> 세포 내 미토콘드리아 손상 및 활성산소종(ROS) 급증으로 만성 신경염증 유발.</li>
+                        <li><strong>탐구 동기:</strong> 인체에 해를 주지 않고 체내/환경 미세플라스틱을 분해할 수 있는 정밀 촉매 필요성 절감.</li>
+                    </ul>
+                `
+            },
+            {
+                title: "⚠️ 2단계: 한계 분석 - 왜 기존 기술로는 안 될까?",
+                content: `
+                    <ul>
+                        <li><strong>생물학적 효소 (PETase):</strong> 기질 선택성은 우수하지만, 45°C 이상에서 단백질 열 변성이 일어나 분해 활성 파괴.</li>
+                        <li><strong>무기 촉매 (금속 산화물):</strong> 열안정성은 높지만, 특정 플라스틱 결합만 골라 자르는 선택성 부재.</li>
+                        <li><strong>💡 아이디어 도출:</strong> 효소의 <b>'선택성'</b> + 무기물의 <b>'고온 안정성'</b>을 결합한 <b>생체모방 나노자임(Nanozyme)</b> 설계!</li>
+                    </ul>
+                `
+            },
+            {
+                title: "🔬 3단계: 구조 설계 - 3대 화학 개념의 통합",
+                content: `
+                    <ul>
+                        <li><strong>① 클릭화학 (Triazole Linker):</strong> CuAAC 반응 기반 질소 배위 골격으로 금속 원자를 안정 고정.</li>
+                        <li><strong>② M-N4 SAC (단일원자 촉매):</strong> d-오비탈 전하 이동으로 에스터 결합(C-O) 활성화 에너지(Ea) 감소.</li>
+                        <li><strong>③ 초분자 포켓 (Host-Guest):</strong> π-π 상호작용 기반 PET 벤젠 고리 선택적 포집.</li>
+                    </ul>
+                `
+            },
+            {
+                title: "💻 4단계: 검증 워크플로우 - 계산화학 3단계 파이프라인",
+                content: `
+                    <ul>
+                        <li><strong>1단계 [ML 스크리닝]:</strong> 기계학습으로 10,000+ 후보 중 반응성 높은 구조 1차 선별.</li>
+                        <li><strong>2단계 [DFT 양자 계산]:</strong> 활성화 에너지 정밀 분석으로 촉매 성능 2차 정밀 검증.</li>
+                        <li><strong>3단계 [MD 시뮬레이션]:</strong> 실제 수계(물) 환경에서 촉매 구조가 깨지지 않는지 최종 검증.</li>
+                    </ul>
+                `
+            },
+            {
+                title: "🎨 5단계: 최종 결론 - 나노자임 설계 캔버스",
+                content: `
+                    <ul>
+                        <li><strong>핵심 성과:</strong> 환경 독성 물질(PET)을 무독성 소분자(TPA/EG)로 안전하게 가수분해 절단하는 이론적 모델 완성.</li>
+                        <li><strong>확장 가능성:</strong> 특정 질병 표적 분자 인식 기술과 연계하여 <b>진단 센서 및 약물 전달(DDS)</b> 기술로 응용 확장 가능.</li>
+                    </ul>
+                `
+            }
+        ];
+
+        let currentStep = 0;
+
+        function updateCard() {
+            const data = stepsData[currentStep];
+            document.getElementById('cardContent').innerHTML = `
+                <h2>${data.title}</h2>
+                <div>${data.content}</div>
+            `;
+
+            // Step Button highlight
+            const buttons = document.querySelectorAll('.step-btn');
+            buttons.forEach((btn, idx) => {
+                if (idx === currentStep) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+
+            // Action Button enable/disable
+            document.getElementById('prevBtn').disabled = (currentStep === 0);
+            if (currentStep === stepsData.length - 1) {
+                document.getElementById('nextBtn').innerText = "첫 단계로 🔄";
+            } else {
+                document.getElementById('nextBtn').innerText = "다음 단계 ▶";
+            }
+        }
+
+        function setStep(step) {
+            currentStep = step;
+            updateCard();
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateCard();
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < stepsData.length - 1) {
+                currentStep++;
+            } else {
+                currentStep = 0; // Loop back
+            }
+            updateCard();
+        }
+
+        // 초기 실행
+        updateCard();
+    </script>
+</body>
+</html>
